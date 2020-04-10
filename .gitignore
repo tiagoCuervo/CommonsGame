@@ -2,3 +2,5 @@ __pycache__
 /utils/*
 /venv/*
 /.idea/*
+/misc/*
+testbench.py
