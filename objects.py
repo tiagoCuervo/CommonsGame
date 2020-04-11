@@ -2,6 +2,7 @@ import numpy as np
 from pycolab.prefab_parts import sprites
 from pycolab import things as pythings
 from scipy.ndimage import convolve
+from constants import respawnProbs
 
 
 class PlayerSprite(sprites.MazeWalker):
@@ -185,9 +186,9 @@ class AppleDrape(pythings.Drape):
         L = convolve(self.curtain[self.numPadPixels + 1:-self.numPadPixels - 1,
                      self.numPadPixels + 1:-self.numPadPixels - 1] * 1, kernel, mode='constant')
         probs = np.zeros(L.shape)
-        probs[(L > 0) & (L <= 2)] = 0.01
-        probs[(L > 2) & (L <= 4)] = 0.05
-        probs[(L > 4)] = 0.1
+        probs[(L > 0) & (L <= 2)] = respawnProbs[0]
+        probs[(L > 2) & (L <= 4)] = respawnProbs[1]
+        probs[(L > 4)] = respawnProbs[2]
         appleIdxs = np.argwhere(np.logical_and(np.logical_xor(self.apples, self.curtain), agentsMap))
         for i, j in appleIdxs:
             self.curtain[i, j] = np.random.choice([True, False],
