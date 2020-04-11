@@ -2,7 +2,7 @@ import numpy as np
 from pycolab.prefab_parts import sprites
 from pycolab import things as pythings
 from scipy.ndimage import convolve
-from constants import respawnProbs
+from CommonsGame.constants import respawnProbs
 
 
 class PlayerSprite(sprites.MazeWalker):

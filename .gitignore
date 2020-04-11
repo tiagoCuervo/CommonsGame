@@ -4,3 +4,4 @@ __pycache__
 /.idea/*
 /misc/*
 testbench.py
+/*.egg-info/*

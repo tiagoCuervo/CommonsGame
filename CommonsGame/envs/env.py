@@ -5,28 +5,28 @@ import matplotlib.pyplot as plt
 import gym
 from gym import spaces
 from pycolab import ascii_art
-from constants import bigMap
-from utils import buildMap, ObservationToArrayWithRGB
-from objects import PlayerSprite, AppleDrape, SightDrape, ShotDrape
+from CommonsGame.constants import bigMap
+from CommonsGame.utils import buildMap, ObservationToArrayWithRGB
+from CommonsGame.objects import PlayerSprite, AppleDrape, SightDrape, ShotDrape
 
 
 class CommonsGame(gym.Env):
     """Custom Environment that follows gym interface"""
     metadata = {'render.modes': ['human']}
 
-    def __init__(self, numAgents, sightRadius, mapSketch=bigMap):
+    def __init__(self, numAgents, visualRadius, mapSketch=bigMap):
         super(CommonsGame, self).__init__()
         # Setup spaces
         self.action_space = spaces.Discrete(8)
-        obHeight = obWidth = sightRadius * 2 + 1
+        obHeight = obWidth = visualRadius * 2 + 1
         self.observation_space = spaces.Box(low=0, high=255, shape=(obHeight, obWidth, 3), dtype=np.uint8)
         # Setup game
         self.numAgents = numAgents
-        self.sightRadius = sightRadius
+        self.sightRadius = visualRadius
         self.agentChars = agentChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"[0:numAgents]
         self.mapHeight = len(mapSketch)
         self.mapWidth = len(mapSketch[0])
-        self.numPadPixels = numPadPixels = sightRadius - 1
+        self.numPadPixels = numPadPixels = visualRadius - 1
         self.gameField = buildMap(mapSketch, numPadPixels=numPadPixels, agentChars=agentChars)
         self.state = None
         # Pycolab related setup:        
@@ -99,4 +99,3 @@ class CommonsGame(gym.Env):
                 ob = None
             obs.append(ob)
         return obs, done
-
