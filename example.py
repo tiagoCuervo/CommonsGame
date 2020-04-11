@@ -3,9 +3,6 @@ import gym
 
 numAgents = 11
 
-# from gym import envs
-# print(envs.registry.all())
-
 env = gym.make('CommonsGame:CommonsGame-v0', numAgents=numAgents, visualRadius=4)
 env.reset()
 for t in range(1000):
