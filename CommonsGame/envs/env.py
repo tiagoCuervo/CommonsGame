@@ -56,9 +56,8 @@ class CommonsGame(gym.Env):
         )
 
     def step(self, nActions):
-        nRewards = list()
         nInfo = {'n': []}
-        self.state, rewards, _ = self._game.play(nActions)
+        self.state, nRewards, _ = self._game.play(nActions)
         nObservations, done = self.getObservation()
         nDone = [done] * self.numAgents
         return nObservations, nRewards, nDone, nInfo
