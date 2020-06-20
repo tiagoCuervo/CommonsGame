@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import gym
 from gym import spaces
 from pycolab import ascii_art
-from CommonsGame.constants import bigMap
+from CommonsGame.constants import *
 from CommonsGame.utils import buildMap, ObservationToArrayWithRGB
 from CommonsGame.objects import PlayerSprite, AppleDrape, SightDrape, ShotDrape
 
@@ -14,18 +14,23 @@ class CommonsGame(gym.Env):
     """Custom Environment that follows gym interface"""
     metadata = {'render.modes': ['human']}
 
-    def __init__(self, numAgents, visualRadius, mapSketch=bigMap):
+    def __init__(self, numAgents, visualRadius, mapSketch=bigMap, fullState=False):
         super(CommonsGame, self).__init__()
+        self.fullState = fullState
         # Setup spaces
         self.action_space = spaces.Discrete(8)
         obHeight = obWidth = visualRadius * 2 + 1
-        self.observation_space = spaces.Box(low=0, high=255, shape=(obHeight, obWidth, 3), dtype=np.uint8)
         # Setup game
         self.numAgents = numAgents
         self.sightRadius = visualRadius
         self.agentChars = agentChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"[0:numAgents]
         self.mapHeight = len(mapSketch)
         self.mapWidth = len(mapSketch[0])
+        if fullState:
+            self.observation_space = spaces.Box(low=0, high=255, shape=(self.mapHeight + 2, self.mapWidth + 2, 3),
+                                                dtype=np.uint8)
+        else:
+            self.observation_space = spaces.Box(low=0, high=255, shape=(obHeight, obWidth, 3), dtype=np.uint8)
         self.numPadPixels = numPadPixels = visualRadius - 1
         self.gameField = buildMap(mapSketch, numPadPixels=numPadPixels, agentChars=agentChars)
         self.state = None
@@ -89,11 +94,19 @@ class CommonsGame(gym.Env):
         board = self.obToImage(self.state)['RGB'].transpose([1, 2, 0])
         for a in ags:
             if a.visible or a.timeout == 25:
-                ob = np.copy(board[
-                             a.position[0] - self.sightRadius:a.position[0] + self.sightRadius + 1,
-                             a.position[1] - self.sightRadius:a.position[1] + self.sightRadius + 1, :])
-                if a.visible:
-                    ob[self.sightRadius, self.sightRadius, :] = [0, 0, 255]
+                if self.fullState:
+                    ob = np.copy(board)
+                    if a.visible:
+                        ob[a.position[0], a.position[1], :] = [0, 0, 255]
+                    ob = ob[self.numPadPixels:self.numPadPixels + self.mapHeight + 2,
+                         self.numPadPixels:self.numPadPixels + self.mapWidth + 2, :]
+                else:
+                    ob = np.copy(board[
+                                 a.position[0] - self.sightRadius:a.position[0] + self.sightRadius + 1,
+                                 a.position[1] - self.sightRadius:a.position[1] + self.sightRadius + 1, :])
+                    if a.visible:
+                        ob[self.sightRadius, self.sightRadius, :] = [0, 0, 255]
+                ob = ob / 255.0
             else:
                 ob = None
             obs.append(ob)
